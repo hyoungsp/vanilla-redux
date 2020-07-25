@@ -1,17 +1,44 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { createStore } from "redux";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const increaseBtn = document.getElementById("increase");
+const decreaseBtn = document.getElementById("decrease");
+const number = document.querySelector("span");
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+number.innerText = 0;
+
+const INCREASE_COUNT = "INCREASE";
+const DECREASE_COUNT = "DECREASE";
+
+const countReducer = (count = 0, action) => {
+  // modify data (not inplace) => will return a new state
+  //! only reducer can modify app data (redux)
+  switch (action.type) {
+    case INCREASE_COUNT:
+      return count + 1;
+    case DECREASE_COUNT:
+      return count - 1;
+    default:
+      return count;
+  }
+};
+
+const countStore = createStore(countReducer);
+
+const onChange = () => {
+  number.innerText = countStore.getState();
+};
+
+// listen to change in the store
+countStore.subscribe(onChange);
+
+// dispatch action -> tell reducer what the button behavior wants
+const handleIncrease = () => {
+  countStore.dispatch({ type: INCREASE_COUNT });
+};
+
+const handleDecrease = () => {
+  countStore.dispatch({ type: DECREASE_COUNT });
+};
+
+increaseBtn.addEventListener("click", handleIncrease); // click the button invokes handleIncrease
+decreaseBtn.addEventListener("click", handleDecrease);
